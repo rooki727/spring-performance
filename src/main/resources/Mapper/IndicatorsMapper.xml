@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linyinlu.dao.IndicatorsDao">
+    <select id="findAllIndicators" resultType="com.linyinlu.entity.Indicators">
+        SELECT * FROM indicators
+    </select>
+    <select id="findIndicatorByIndicatorId" resultType="com.linyinlu.entity.Indicators">
+        SELECT * FROM indicators where indicator_id = #{indicator_id}
+    </select>
+    <insert id="addIndicators" parameterType="com.linyinlu.entity.Indicators">
+        INSERT INTO indicators (
+        indicator_name,
+        weight
+        )
+        VALUES (
+        <if test="indicator_name != null and indicator_name != ''">#{indicator_name}</if>,
+        <if test="weight != null and weight != ''">#{weight}</if>
+        )
+    </insert>
+    <delete id="deleteIndicators">
+        DELETE FROM indicators WHERE indicator_id = #{indicator_id}
+    </delete>
+    <!-- 更新用户信息 -->
+    <update id="updateIndicators" parameterType="com.linyinlu.entity.Indicators">
+        UPDATE indicators
+        <set>
+            <if test="indicator_name != null">
+                indicator_name = #{indicator_name},
+            </if>
+            <if test="weight != null">
+                weight = #{weight},
+            </if>
+        </set>
+        WHERE indicator_id = #{indicator_id}
+    </update>
+</mapper>

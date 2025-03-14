@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.linyinlu.dao.IUserDao">
+
+    <!-- 查询所有用户 -->
+    <select id="findAll" resultType="com.linyinlu.entity.User">
+        SELECT * FROM users
+    </select>
+<!--    查询所有教师-->
+    <select id="findAllTeacher" resultType="com.linyinlu.entity.User">
+        SELECT * FROM users where role = 'teacher'
+    </select>
+    <select id="getUserById" resultType="com.linyinlu.entity.User">
+        SELECT * FROM users where user_id = #{user_id}
+    </select>
+    <select id="checkUserName" resultType="com.linyinlu.entity.User">
+        SELECT * FROM users where account = #{account}
+    </select>
+    <!-- 保存用户 -->
+    <insert id="addUser" parameterType="com.linyinlu.entity.User">
+        INSERT INTO users (
+        account,
+        password,
+        real_name,
+        gender,
+        phone_number,
+        email,
+        academy,
+        role
+        )
+        VALUES (
+        #{account},
+        #{password},
+        <if test="real_name != null and real_name != ''">#{real_name}</if>,
+        <if test="gender != null and gender != ''">#{gender}</if>,
+        <if test="phone_number != null and phone_number != ''">#{phone_number}</if>,
+        <if test="email != null and email != ''">#{email}</if>,
+        <if test="academy != null and academy != ''">#{academy}</if>,
+        <if test="role != null and role != ''">#{role}</if>
+        )
+    </insert>
+
+
+    <!-- 删除用户 -->
+    <delete id="deleteUser">
+        DELETE FROM users WHERE user_id = #{user_id}
+    </delete>
+
+    <!-- 更新用户信息 -->
+    <update id="updateUser" parameterType="com.linyinlu.entity.User">
+        UPDATE users
+        <set>
+            <if test="real_name != null">
+                real_name = #{real_name},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="phone_number != null">
+                phone_number = #{phone_number},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="academy != null">
+                academy = #{academy},
+            </if>
+            <if test="role != null">
+                role = #{role},
+            </if>
+        </set>
+        WHERE user_id = #{user_id}
+    </update>
+    <update id="updateUserToken" parameterType="com.linyinlu.entity.User">
+        UPDATE users SET token = #{token}, refreshToken = #{refreshToken} WHERE user_id = #{user_id}
+    </update>
+    <!-- 根据用户名和密码查询用户 -->
+    <select id="selectUserByAccountAndPassword" resultType="com.linyinlu.entity.User" parameterType="com.linyinlu.entity.User">
+        SELECT * FROM users WHERE account = #{account} AND role = #{role}
+    </select>
+    <select id="selectUserByRefreshToken" resultType="com.linyinlu.entity.User" parameterType="com.linyinlu.entity.User">
+        SELECT * FROM users WHERE refreshToken = #{refreshToken}
+    </select>
+</mapper>

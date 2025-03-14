@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linyinlu.dao.HomeDao">
+    <select id="findUserCount" resultType="com.linyinlu.entity.HomeTotalCount">
+        SELECT COUNT(*) AS home_count FROM users
+    </select>
+    <select id="findIndicatorsCount" resultType="com.linyinlu.entity.HomeTotalCount">
+        SELECT COUNT(*) AS home_count FROM indicators
+    </select>
+    <select id="findAssessmentCount" resultType="com.linyinlu.entity.HomeTotalCount">
+        SELECT COUNT(*) AS home_count FROM teacher_performance WHERE
+            performance_date >= CURDATE() - INTERVAL 30 DAY
+    </select>
+    <select id="findSelfAssessmentCount" resultType="com.linyinlu.entity.HomeTotalCount">
+        SELECT COUNT(*) AS home_count FROM self_assessment WHERE
+            assessment_date >= CURDATE() - INTERVAL 30 DAY
+    </select>
+
+    <select id="findAcademyCount" resultType="com.linyinlu.entity.HomeTotalCount">
+        SELECT academy AS home_name,
+               COUNT(*) AS home_count
+        FROM users
+        GROUP BY academy
+    </select>
+
+    <select id="findIndicatorsScore" resultType="com.linyinlu.entity.HomeTotalCount">
+        SELECT
+            i.indicator_name AS home_name,               -- 获取指标名称
+            AVG(a.score) AS home_count       -- 计算每个指标的平均分
+        FROM
+            assessment a
+                JOIN
+            indicators i ON a.indicator_id = i.indicator_id   -- 连接assessment表和indicators表
+        WHERE
+            a.assessment_date >= CURDATE() - INTERVAL 30 DAY   -- 过滤过去30天的数据
+        GROUP BY
+            i.indicator_name                -- 按指标名称分组
+        ORDER BY
+            home_count DESC;                 -- 按平均分降序排序（可选）
+    </select>
+</mapper>

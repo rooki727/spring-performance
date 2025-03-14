@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linyinlu.dao.SelfAssessmentDao">
+
+    <select id="findAllSelfAssessment" resultType="com.linyinlu.entity.AssessmentUserIndicators">
+        SELECT
+            sa.self_assessment_id,
+            sa.user_id,
+            u.real_name,
+            sa.indicator_id,
+            i.indicator_name,
+            sa.score,
+            sa.assess_type,
+            sa.basis,
+            sa.assessment_date
+        FROM
+            self_assessment sa
+                JOIN
+            users u ON sa.user_id = u.user_id
+                JOIN
+            indicators i ON sa.indicator_id = i.indicator_id
+        ORDER BY
+            sa.assessment_date ASC,  -- 先按assessment_date从旧到新排序
+            sa.user_id ASC;
+    </select>
+    <select id="findAllSelfAssessmentByUserId" resultType="com.linyinlu.entity.AssessmentUserIndicators">
+        SELECT
+            sa.self_assessment_id,
+            sa.user_id,
+            u.real_name,
+            sa.indicator_id,
+            i.indicator_name,
+            sa.score,
+            sa.assess_type,
+            sa.basis,
+            sa.assessment_date
+        FROM
+            self_assessment sa
+                JOIN
+            users u ON sa.user_id = u.user_id
+                JOIN
+            indicators i ON sa.indicator_id = i.indicator_id
+        WHERE
+            sa.user_id = #{user_id};
+
+    </select>
+    <insert id="addSelfAssessment" parameterType="com.linyinlu.entity.SelfAssessment">
+        INSERT INTO self_assessment (
+        user_id,
+        indicator_id,
+        score,
+        basis
+        )
+        VALUES (
+        <if test="user_id != null and user_id != ''">#{user_id}</if>,
+        <if test="indicator_id != null and indicator_id != ''">#{indicator_id}</if>,
+        <if test="score != null and score != ''">#{score}</if>,
+        <if test="basis != null and basis != ''">#{basis}</if>
+        )
+    </insert>
+    <delete id="deleteSelfAssessment">
+        DELETE FROM self_assessment WHERE self_assessment_id = #{self_assessment_id}
+    </delete>
+    <!-- 更新信息 -->
+    <update id="updateSelfAssessment" parameterType="com.linyinlu.entity.SelfAssessment">
+        UPDATE self_assessment
+        <set>
+            <if test="score != null">
+                score = #{score},
+            </if>
+            <if test="basis != null">
+                basis = #{basis},
+            </if>
+            <if test="assess_type != null">
+                assess_type = #{assess_type},
+            </if>
+        </set>
+        WHERE self_assessment_id = #{self_assessment_id}
+    </update>
+    <update id="updateSelfAssessType" parameterType="com.linyinlu.entity.SelfAssessment">
+        UPDATE self_assessment set assess_type = '已评定'
+        WHERE user_id = #{user_id} AND indicator_id = #{indicator_id}
+    </update>
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linyinlu.dao.AssessmentDao">
+
+    <insert id="addAssessment" parameterType="com.linyinlu.entity.Assessment">
+        INSERT INTO assessment (
+        indicator_id,
+        score,
+        assessment_type,
+        basis,
+        performance_id
+        )
+        VALUES (
+        <if test="indicator_id != null and indicator_id != ''">#{indicator_id}</if>,
+        <if test="score != null and score != ''">#{score}</if>,
+        <if test="assessment_type != null and assessment_type != ''">#{assessment_type}</if>,
+        <if test="basis != null and basis != ''">#{basis}</if>,
+        <if test="performance_id != null and performance_id != ''">#{performance_id}</if>
+        )
+    </insert>
+
+    <select id="findAssessmentById" resultType="com.linyinlu.entity.Assessment" parameterType="com.linyinlu.entity.Assessment">
+        SELECT
+            sa.assessment_id,
+            sa.indicator_id,
+            i.indicator_name,
+            sa.score,
+            sa.assessment_type,
+            sa.basis,
+            sa.assessment_date,
+            sa.performance_id
+        FROM
+            assessment sa
+                JOIN
+            indicators i ON sa.indicator_id = i.indicator_id
+                 where performance_id = #{performance_id}
+    </select>
+
+    <!-- 更新信息 -->
+    <update id="updateAssessmentById" parameterType="com.linyinlu.entity.Assessment">
+        UPDATE assessment
+        <set>
+            <if test="score != null">
+                score = #{score},
+            </if>
+            <if test="basis != null">
+                basis = #{basis},
+            </if>
+        </set>
+        WHERE assessment_id = #{assessment_id}
+    </update>
+    <delete id="deleteAssessment">
+        DELETE FROM assessment WHERE assessment_id = #{assessment_id}
+    </delete>
+</mapper>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linyinlu.dao.TeaPerforDao">
+
+    <insert id="addSelfAssessment" parameterType="com.linyinlu.entity.TeacherPerformance">
+        INSERT INTO teacher_performance (total_score,user_id) VALUES (0,#{user_id})
+    </insert>
+    <select id="getLastInsertedId" resultType="Integer">
+        SELECT LAST_INSERT_ID()
+    </select>
+    <update id="updateTotalScore" parameterType="com.linyinlu.entity.TeacherPerformance">
+        UPDATE teacher_performance
+        SET total_score = total_score + #{total_score}
+        WHERE performance_id = #{performance_id}
+    </update>
+    <update id="setTotalScore" parameterType="com.linyinlu.entity.TeacherPerformance">
+        UPDATE teacher_performance
+        SET total_score =#{total_score}
+        WHERE performance_id = #{performance_id}
+    </update>
+    <select id="isHaveAssessment" resultType="com.linyinlu.entity.TeacherPerformance" parameterType="com.linyinlu.entity.TeacherPerformance">
+        SELECT *
+        FROM teacher_performance
+        WHERE user_id = #{user_id}
+          AND performance_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+            LIMIT 1
+    </select>
+
+    <select id="getPerformancesAssessments" resultType="com.linyinlu.entity.AssessmentPerformance">
+        SELECT
+            tf.performance_id,
+            tf.user_id,
+            u.real_name,
+            tf.total_score,
+            tf.performance_date
+        FROM
+            teacher_performance tf
+                JOIN
+            users u ON tf.user_id = u.user_id
+        <where>
+            <if test="real_name != null and real_name != ''">
+                AND u.real_name LIKE CONCAT('%', #{real_name}, '%')  <!-- 模糊查询 -->
+            </if>
+        </where>
+                 ORDER BY performance_date DESC
+            LIMIT #{limit} OFFSET #{offset}
+    </select>
+<!--    获取当前季度所有教师绩效-->
+    <select id="getPerformancesAssessmentsNow" resultType="com.linyinlu.entity.AssessmentPerformance">
+        SELECT
+        tf.user_id,
+        u.real_name,
+        MAX(tf.total_score) AS total_score,
+        MAX(tf.performance_date) AS performance_date,
+        (SELECT performance_id FROM teacher_performance WHERE user_id = tf.user_id ORDER BY performance_date DESC LIMIT 1) AS performance_id
+        FROM
+        teacher_performance tf
+        JOIN
+        users u ON tf.user_id = u.user_id
+        WHERE
+        tf.performance_date >= CURDATE() - INTERVAL 90 DAY <!-- 只取90天以内的数据 -->
+        <if test="real_name != null and real_name != ''">
+            AND u.real_name LIKE CONCAT('%', #{real_name}, '%') <!-- 模糊查询 -->
+        </if>
+        GROUP BY
+        tf.user_id, u.real_name
+        ORDER BY
+        total_score DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+
+    <select id="getTotalCountNow" resultType="Integer">
+        SELECT
+        COUNT(*)  <!-- 统计符合条件的记录数 -->
+        FROM
+        teacher_performance tf
+        JOIN
+        users u ON tf.user_id = u.user_id
+        <where>
+            <if test="real_name != null and real_name != ''">
+                AND u.real_name LIKE CONCAT('%', #{real_name}, '%')  <!-- 模糊查询 -->
+            </if>
+            AND tf.performance_date >= CURDATE() - INTERVAL 90 DAY <!-- 只取90天以内的数据 -->
+        </where>
+    </select>
+
+
+    <select id="getTotalCount" resultType="Integer">
+        SELECT
+        COUNT(*)  <!-- 统计记录数 -->
+        FROM
+        teacher_performance tf
+        JOIN
+        users u ON tf.user_id = u.user_id
+        <where>
+            <if test="real_name != null and real_name != ''">
+                AND u.real_name LIKE CONCAT('%', #{real_name}, '%')  <!-- 模糊查询 -->
+            </if>
+        </where>
+    </select>
+
+    <select id="getPerformancesAssessmentsById" resultType="com.linyinlu.entity.AssessmentPerformance">
+        SELECT
+            tf.performance_id,
+            tf.user_id,
+            u.real_name,
+            tf.total_score,
+            tf.performance_date
+        FROM
+            teacher_performance tf
+                JOIN
+            users u ON tf.user_id = u.user_id
+        WHERE tf.user_id=#{user_id}
+        ORDER BY performance_date DESC
+    </select>
+
+    <delete id="deleteTeacherPerformance">
+        DELETE FROM teacher_performance WHERE performance_id = #{performance_id}
+    </delete>
+
+    <select id="getAcademyUserStatistics" resultType="com.linyinlu.entity.AcademyPerformance">
+        SELECT
+            u.academy,
+            COUNT(*) AS user_count,  -- 每个学院的用户数量
+            SUM(tf.total_score) / COUNT(*) AS academy_total  -- 每个学院的平均分数
+        FROM
+            teacher_performance tf
+                JOIN
+            users u ON tf.user_id = u.user_id
+        WHERE
+            tf.performance_date >= CURDATE() - INTERVAL 90 DAY  -- 只统计过去90天的数据
+        GROUP BY
+            u.academy  -- 按学院分组
+        ORDER BY
+            academy_total DESC  -- 按照平均分降序排列
+    </select>
+
+</mapper>
