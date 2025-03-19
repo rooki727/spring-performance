@@ -12,13 +12,13 @@
     <!--Spring整合Mybatisl框架-->
     <!-- 配置C3P0的连接池对象 -->
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-        <property name="driverClass" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://119.29.168.176:3306/linyinlu"/>
-        <property name="user" value="linyinlu"/>
-        <property name="password" value="linyinlu."/>
-<!--        <property name="jdbcUrl" value="jdbc:mysql:///linyinlu"/>-->
-<!--        <property name="user" value="root"/>-->
-<!--        <property name="password" value="k20020727"/>-->
+<!--        <property name="driverClass" value="com.mysql.jdbc.Driver"/>-->
+<!--        <property name="jdbcUrl" value="jdbc:mysql://119.29.168.176:3306/linyinlu"/>-->
+<!--        <property name="user" value="linyinlu"/>-->
+<!--        <property name="password" value="linyinlu."/>-->
+        <property name="jdbcUrl" value="jdbc:mysql:///linyinlu"/>
+        <property name="user" value="root"/>
+        <property name="password" value="k20020727"/>
     </bean>
     <!-- 配置SqlSession的工厂 -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -34,6 +34,9 @@
                 <value>classpath:Mapper/TeaPerforMapper.xml</value>
                 <value>classpath:Mapper/ConfigMapper.xml</value>
                 <value>classpath:Mapper/HomeMapper.xml</value>
+                <value>classpath:Mapper/TeachingTaskMapper.xml</value>
+                <value>classpath:Mapper/SocialServiceMapper.xml</value>
+                <value>classpath:Mapper/ResearchMapper.xml</value>
             </list>
         </property>
         <!--实体列别名-->
@@ -52,8 +55,10 @@
     </bean>
     <!-- 在XML配置文件中配置MultipartResolver -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <!-- 可以根据需要进行配置 -->
-        <property name="maxUploadSize" value="5242880" /> <!-- 最大上传文件大小，单位为字节，这里设置为5MB -->
+        <!-- 最大上传尺寸 100MB -->
+        <property name="maxUploadSize" value="104857600"/>
+        <!-- 默认编码 -->
+        <property name="defaultEncoding" value="UTF-8"/>
     </bean>
     <!-- 配置事务的通知 -->
     <tx:advice id="txAdvice" transaction-manager="transactionManager">

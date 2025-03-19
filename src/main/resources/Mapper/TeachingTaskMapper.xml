@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linyinlu.dao.TeachingTaskDao">
+
+    <select id="getAllTask" resultType="com.linyinlu.entity.TeachingTask">
+        SELECT
+            t.task_id,
+            t.semester,
+            t.course_name,
+            t.class_type,
+            t.class_name,
+            t.credit_hours,
+            t.created_date,
+            t.user_id,
+            t.check_status,
+            t.file_link,
+            u.real_name
+        FROM
+            teaching_task t
+                JOIN
+            users u ON t.user_id = u.user_id
+    </select>
+    <select id="getTaskByUser" resultType="com.linyinlu.entity.TeachingTask">
+        SELECT
+            t.task_id,
+            t.semester,
+            t.course_name,
+            t.class_type,
+            t.class_name,
+            t.credit_hours,
+            t.created_date,
+            t.user_id,
+            t.check_status,
+            t.file_link,
+            u.real_name
+        FROM
+            teaching_task t
+                JOIN
+            users u ON t.user_id = u.user_id
+        WHERE t.user_id = #{user_id}
+    </select>
+    <delete id="deleteTask">
+        DELETE FROM teaching_task WHERE task_id = #{task_id}
+    </delete>
+
+    <insert id="addTask" parameterType="com.linyinlu.entity.TeachingTask">
+        INSERT INTO teaching_task (
+        semester,
+        course_name,
+        class_type,
+        class_name,
+        credit_hours,
+        user_id,
+        file_link
+        )
+        VALUES (
+        <if test="semester != null and semester != ''">#{semester}</if>,
+        <if test="course_name != null and course_name != ''">#{course_name}</if>,
+        <if test="class_type != null and class_type != ''">#{class_type}</if>,
+        <if test="class_name != null and class_name != ''">#{class_name}</if>,
+        <if test="credit_hours != null and credit_hours != ''">#{credit_hours}</if>,
+        <if test="user_id != null and user_id != ''">#{user_id}</if>,
+        <if test="file_link != null and file_link != ''">#{file_link}</if>
+        )
+    </insert>
+
+    <update id="updateTask" parameterType="com.linyinlu.entity.TeachingTask">
+        UPDATE teaching_task
+        <set>
+            <if test="semester != null">
+                semester = #{semester},
+            </if>
+            <if test="course_name != null">
+                course_name = #{course_name},
+            </if>
+            <if test="class_type != null">
+                class_type = #{class_type},
+            </if>
+            <if test="class_name != null">
+                class_name = #{class_name},
+            </if>
+            <if test="credit_hours != null">
+                credit_hours = #{credit_hours},
+            </if>
+            <if test="file_link != null">
+                file_link = #{file_link},
+            </if>
+        </set>
+        WHERE task_id = #{task_id}
+    </update>
+
+    <update id="checkStatus" parameterType="com.linyinlu.entity.TeachingTask">
+        UPDATE teaching_task
+        <set>
+            <if test="check_status != null">
+                check_status = #{check_status},
+            </if>
+        </set>
+        WHERE task_id = #{task_id}
+    </update>
+</mapper>

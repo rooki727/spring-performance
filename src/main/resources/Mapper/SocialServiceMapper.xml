@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linyinlu.dao.SocialServiceDao">
+
+    <select id="getAllSocial" resultType="com.linyinlu.entity.SocialService">
+        SELECT
+            s.service_id,
+            s.title,
+            s.funding_source,
+            s.funding_amount,
+            s.agreement_date,
+            s.level,
+            s.report_time,
+            s.report_ranking,
+            s.check_status,
+            s.user_id,
+            s.created_date,
+            s.file_link,
+            u.real_name
+        FROM
+            social_service s
+                JOIN
+            users u ON s.user_id = u.user_id
+    </select>
+    <select id="getSocialByUser" resultType="com.linyinlu.entity.SocialService">
+        SELECT
+            s.service_id,
+            s.title,
+            s.funding_source,
+            s.funding_amount,
+            s.agreement_date,
+            s.level,
+            s.report_time,
+            s.report_ranking,
+            s.check_status,
+            s.user_id,
+            s.created_date,
+            s.file_link,
+            u.real_name
+        FROM
+            social_service s
+                JOIN
+            users u ON s.user_id = u.user_id
+        WHERE s.user_id = #{user_id}
+    </select>
+    <delete id="deleteSocial">
+        DELETE FROM social_service WHERE service_id = #{service_id}
+    </delete>
+
+    <insert id="addSocial" parameterType="com.linyinlu.entity.SocialService">
+        INSERT INTO social_service (
+        title,
+        funding_source,
+        funding_amount,
+        agreement_date,
+        level,
+        report_time,
+        report_ranking,
+        user_id,
+        file_link
+        )
+        VALUES (
+        #{title},
+        <choose>
+            <when test="funding_source != null and funding_source != ''">#{funding_source}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="funding_amount != null and funding_amount != ''">#{funding_amount}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="agreement_date != null">#{agreement_date}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="level != null and level != ''">#{level}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="report_time != null">#{report_time}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="report_ranking != null and report_ranking != ''">#{report_ranking}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        #{user_id},
+        <choose>
+            <when test="file_link != null and file_link != ''">#{file_link}</when>
+            <otherwise>null</otherwise>
+        </choose>
+        )
+    </insert>
+
+
+    <update id="updateSocial" parameterType="com.linyinlu.entity.SocialService">
+        UPDATE social_service
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="funding_source != null and title != ''">
+                funding_source = #{funding_source},
+            </if>
+            <if test="funding_amount != null and funding_amount != ''">
+                funding_amount = #{funding_amount},
+            </if>
+            <if test="agreement_date != null">
+                agreement_date = #{agreement_date},
+            </if>
+            <if test="level != null and level != ''">
+                level = #{level},
+            </if>
+            <if test="report_time != null">
+                report_time = #{report_time},
+            </if>
+            <if test="report_ranking != null and report_ranking != ''">
+                report_ranking = #{report_ranking},
+            </if>
+            <if test="file_link != null and file_link != ''">
+                file_link = #{file_link},
+            </if>
+        </set>
+        WHERE service_id = #{service_id}
+    </update>
+
+    <update id="checkStatus" parameterType="com.linyinlu.entity.SocialService">
+        UPDATE social_service
+        <set>
+            <if test="check_status != null">
+                check_status = #{check_status},
+            </if>
+        </set>
+        WHERE service_id = #{service_id}
+    </update>
+</mapper>
