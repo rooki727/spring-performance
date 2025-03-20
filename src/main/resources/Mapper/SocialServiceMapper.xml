@@ -103,7 +103,7 @@
             <if test="title != null and title != ''">
                 title = #{title},
             </if>
-            <if test="funding_source != null and title != ''">
+            <if test="funding_source != null and funding_source != ''">
                 funding_source = #{funding_source},
             </if>
             <if test="funding_amount != null and funding_amount != ''">

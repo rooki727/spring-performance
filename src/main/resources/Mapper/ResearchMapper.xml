@@ -4,6 +4,174 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.linyinlu.dao.ResearchDao">
+    <select id="getAllResearch" resultType="com.linyinlu.entity.Research">
+        SELECT
+            r.research_id,
+            r.category,
+            r.sub_type,
+            r.level,
+            r.title,
+            r.start_date,
+            r.end_date,
+            r.funding,
+            r.publisher,
+            r.ranking,
+            r.is_authorized,
+            r.description,
+            r.user_id,
+            r.created_date,
+            r.check_status,
+            r.file_link,
+            u.real_name
+        FROM
+            research r
+                JOIN
+            users u ON r.user_id = u.user_id
+    </select>
+    <select id="getResearchByUser" resultType="com.linyinlu.entity.Research">
+        SELECT
+            r.research_id,
+            r.category,
+            r.sub_type,
+            r.level,
+            r.title,
+            r.start_date,
+            r.end_date,
+            r.funding,
+            r.publisher,
+            r.ranking,
+            r.is_authorized,
+            r.description,
+            r.user_id,
+            r.created_date,
+            r.check_status,
+            r.file_link,
+            u.real_name
+        FROM
+            research r
+                JOIN
+            users u ON r.user_id = u.user_id
+        WHERE r.user_id = #{user_id}
+    </select>
+    <delete id="deleteResearch">
+        DELETE FROM research WHERE research_id = #{research_id}
+    </delete>
 
+    <insert id="addResearch" parameterType="com.linyinlu.entity.Research">
+        INSERT INTO research (
+        category,
+        title,
+        sub_type,
+        level,
+        start_date,
+        end_date,
+        funding,
+        publisher,
+        ranking,
+        is_authorized,
+        description,
+        user_id,
+        file_link
+        )
+        VALUES (
+        #{category},
+        #{title},
+        <choose>
+            <when test="sub_type != null and sub_type != ''">#{sub_type}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="level != null and level != ''">#{level}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="start_date != null">#{start_date}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="end_date != null">#{end_date}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="funding != null and funding != ''">#{funding}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="publisher != null and publisher != ''">#{publisher}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="ranking != null and ranking != ''">#{ranking}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="is_authorized != null and is_authorized != ''">#{is_authorized}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        <choose>
+            <when test="description != null and description != ''">#{description}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        #{user_id},
+        <choose>
+            <when test="file_link != null and file_link != ''">#{file_link}</when>
+            <otherwise>null</otherwise>
+        </choose>
+        )
+    </insert>
+
+
+    <update id="updateResearch" parameterType="com.linyinlu.entity.Research">
+        UPDATE research
+        <set>
+            <if test="category != null and title != ''">
+                category = #{category},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="sub_type != null and sub_type != ''">
+                sub_type = #{sub_type},
+            </if>
+            <if test="level != null and level != ''">
+                level = #{level},
+            </if>
+            <if test="start_date != null">
+                start_date = #{start_date},
+            </if>
+            <if test="end_date != null">
+                end_date = #{end_date},
+            </if>
+            <if test="funding != null and funding != ''">
+                funding = #{funding},
+            </if>
+            <if test="publisher != null and publisher != ''">
+                publisher = #{publisher},
+            </if>
+            <if test="ranking != null and ranking != ''">
+                ranking = #{ranking},
+            </if>
+            <if test="is_authorized != null and is_authorized != ''">
+                is_authorized = #{is_authorized},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="file_link != null and file_link != ''">
+                file_link = #{file_link},
+            </if>
+        </set>
+        WHERE research_id = #{research_id}
+    </update>
+
+    <update id="checkStatus" parameterType="com.linyinlu.entity.Research">
+        UPDATE research
+        <set>
+            <if test="check_status != null">
+                check_status = #{check_status},
+            </if>
+        </set>
+        WHERE research_id = #{research_id}
+    </update>
 
 </mapper>
